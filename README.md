@@ -34,7 +34,7 @@ Endpont returns all short links added by particular user
 
 > example url
 
-> **/data?uid=[USER_ID]&auto=[true|false]&code=[UNIQUE_CODE]&url=[URL]**
+> **/add?uid=[USER_ID]&auto=[true|false]&code=[UNIQUE_CODE]&url=[URL]**
 
 Query | Description
 ------------ | -------------
@@ -50,6 +50,11 @@ auto | to generate unique code automatically [true|false] (Optional)
     "msg": "[Success / Failure]"
 }
 ```
+
+## */:code*
+
+> Short Url
+
 
 ## Demo UI for this Project
 
