@@ -2,14 +2,21 @@ const functions = require('firebase-functions');
 const firebase = require('firebase-admin');
 const express = require('express');
 const engines = require('consolidate');
+const cors = require('cors')
+var request = require('request');
+var cheerio = require('cheerio');
+var UrlD = require('url');
 
+const ui_url = "http://urlshrt.ga/";
 
 const app = express();
+
+
 app.engine('hbs', engines.handlebars);
 app.set('views', './views');
 app.set('view engine', 'hbs');
 app.use(express.static('static'));
-
+app.use(cors());
 
 const firebaseApp = firebase.initializeApp(
     functions.config().firebase
@@ -17,28 +24,45 @@ const firebaseApp = firebase.initializeApp(
 
 const firestoreApp = firebaseApp.firestore();
 
+app.get('/index', (req, res) => {
+    res.redirect(ui_url);
+});
+
 app.get('/data', (req, res) => {
     var uid = req.query.uid;
 
-    firestoreApp.collection('urls').where("uid", "==", uid)
-    .get()
-    .then(querySnapshot => {
-        var all_user_links = [];
-        querySnapshot.forEach((doc) => {
-            all_user_links.push(doc.data());
+    if(uid) {
+        firestoreApp.collection('urls').where("uid", "==", uid)
+        .get()
+        .then(querySnapshot => {
+            var all_user_links = [];
+            querySnapshot.forEach((doc) => {
+                all_user_links.push(doc.data());
+            })
+            res.send(all_user_links);
         })
-        res.send(all_user_links);
-    })
-    .catch(err => {
-        res.send({ "error": true, "msg": "Unknown error" });
-    })
+        .catch(err => {
+            console.log(err)
+            res.send({ "error": true, "msg": "Unknown error" });
+        })
+    } else {
+        res.send({ "error": true, "msg": "Invalid user"})
+    }
 });
 
 app.get('/add', (req, res) => {
     var url = req.query.url;
     var code = req.query.code;
     var uid = req.query.uid;
-    var auto = req.query.auto
+    var auto = req.query.auto;
+    var title = "";
+
+    console.log("else");
+    var hostname = (UrlD.parse(url)).hostname;
+    title = hostname;
+    console.log(hostname)
+
+    var base_url = "https://urlst.ga/"
 
     if(!code || auto) {
         code = makeid();
@@ -61,11 +85,15 @@ app.get('/add', (req, res) => {
                 code: code,
                 url: url,
                 views: 0,
-                uid: uid
+                uid: uid,
+                short_url: base_url + code,
+                title: title
             })
             .then(docRef => {
                 docRef.get()
-                .then(data => res.send({"error": false, "msg": "Url added Successfully."}));
+                .then(data => {
+                    res.send({"error": false, "msg": "Url added Successfully.", "short_url": data.data().short_url })
+                });
             })
             .catch(err => {
                 res.send({"error": true, "msg": "Unknown error."});
@@ -88,10 +116,6 @@ function makeid() {
     return text;
 }
 
-app.get('/error', (req,res) => {
-    res.render('index');
-})
-
 app.get('/:code', (req,res) => {
     var code = req.params.code;
     firestoreApp.collection('urls').where("code", "==", code).get()
@@ -99,15 +123,19 @@ app.get('/:code', (req,res) => {
         var user_link = [];
         data.forEach((doc) => {
             user_link.push(doc.data());
+            var view = doc.data().views;
+            doc.ref.update({
+                views: view+1
+            });
         })
         if(user_link.length > 0) {
             res.redirect(user_link[0].url);
         } else {
-            res.send({"error": true, "msg": "Unknown Error"});
+            res.render('index');
         }
     })
     .catch((err) => {
-        res.send({"error": true, "msg": "Unknown Error"});
+        res.render('index');
     })
 })
 

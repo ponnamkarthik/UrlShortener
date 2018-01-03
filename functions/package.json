@@ -10,11 +10,14 @@
   },
   "dependencies": {
     "body-parser": "^1.18.2",
+    "cheerio": "^1.0.0-rc.2",
     "consolidate": "^0.15.0",
+    "cors": "^2.8.4",
     "express": "^4.16.2",
     "firebase-admin": "~5.4.2",
     "firebase-functions": "^0.7.1",
-    "handlebars": "^4.0.11"
+    "handlebars": "^4.0.11",
+    "request": "^2.83.0"
   },
   "private": true
 }
