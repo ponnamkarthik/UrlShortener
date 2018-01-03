@@ -14,16 +14,16 @@ Endpont returns all short links added by particular user
 ```json
 [
     {
-        code: "code1",
-        views: 0,
-        url:, "url1",
-        uid: "USER_ID"
+        "code": "code1",
+        "views": 0,
+        "url": "url1",
+        "uid": "USER_ID"
     },
     {
-        code: "code2",
-        views: 0,
-        url:, "url2",
-        uid: "USER_ID"
+        "code": "code2",
+        "views": 0,
+        "url": "url2",
+        "uid": "USER_ID"
     }
 ]
 ```
@@ -46,8 +46,8 @@ auto | to generate unique code automatically [true|false] (Optional)
 
 ```json
 {
-    error: "[true/false]",
-    msg: "[Success / Failure]"
+    "error": "[true/false]",
+    "msg": "[Success / Failure]"
 }
 ```
 
