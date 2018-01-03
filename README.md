@@ -54,3 +54,7 @@ auto | to generate unique code automatically [true|false] (Optional)
 ## Demo UI for this Project
 
 > [PonnamKarthik/Url-Shortener-UI](https://github.com/PonnamKarthik/Url-Shortener-UI)
+
+## Note
+
+> This repo contains demo ui in public folder 
