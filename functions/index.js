@@ -28,9 +28,29 @@ app.get('/index', (req, res) => {
     res.redirect(ui_url);
 });
 
+app.get('/delete', (req, res) => {
+    var uid = req.query.uid;
+    var code = req.query.code;
+
+    if(uid) {
+        firestoreApp.collection('urls')
+        .where("uid", "==", uid)
+        .where("code", "==", code)
+        .get()
+        .then(querySnapshot => {
+            querySnapshot.forEach((doc) => {
+                doc.ref.delete();
+            })
+            res.send({ "error": false, "msg": "Delete Successful" })
+        })
+        .catch(err => {
+            console.log(err);
+            res.send({ "error": true, "msg": "Unable to Delete" });
+        })
+    }
+}) 
 app.get('/data', (req, res) => {
     var uid = req.query.uid;
-
     if(uid) {
         firestoreApp.collection('urls').where("uid", "==", uid)
         .get()
@@ -57,10 +77,8 @@ app.get('/add', (req, res) => {
     var auto = req.query.auto;
     var title = "";
 
-    console.log("else");
     var hostname = (UrlD.parse(url)).hostname;
     title = hostname;
-    console.log(hostname)
 
     var base_url = "https://urlst.ga/"
 
