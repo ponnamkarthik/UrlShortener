@@ -7,7 +7,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 var UrlD = require('url');
 
-const ui_url = "http://urlshrt.ga/";
+const ui_url = "http://urlst.ga/";
 
 const app = express();
 
@@ -53,6 +53,7 @@ app.get('/data', (req, res) => {
     var uid = req.query.uid;
     if(uid) {
         firestoreApp.collection('urls').where("uid", "==", uid)
+        .orderBy("date", "desc")
         .get()
         .then(querySnapshot => {
             var all_user_links = [];
@@ -82,7 +83,7 @@ app.get('/add', (req, res) => {
 
     var base_url = "https://urlst.ga/"
 
-    if(!code || auto) {
+    if(!code || auto || (code == "null")) {
         code = makeid();
     }
     
@@ -105,7 +106,8 @@ app.get('/add', (req, res) => {
                 views: 0,
                 uid: uid,
                 short_url: base_url + code,
-                title: title
+                title: title,
+                date: new Date()
             })
             .then(docRef => {
                 docRef.get()

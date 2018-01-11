@@ -1,6 +1,15 @@
 # UrlShortener
 URL Shortener is used to create short URLs that can be easily shared, tweeted, or emailed to friends whcic is built using Google Cloud functions, Cloud hosting and firestore
 
+You Can check the UI Here
+
+> Web UI written in Vue.Js [PonnamKarthik/Url-Shortener-UI](https://github.com/PonnamKarthik/Url-Shortener-UI)
+
+
+> Android App written in Java [PonnamKarthik/Url-Shortener-Android-App](https://github.com/PonnamKarthik/Url-Shortener-Android-App)
+
+
+
 # API endpoints
 
 ## */data*
@@ -41,7 +50,30 @@ Query | Description
 uid | unique user id
 code | unique short link code (Optional)
 url | link to short
-auto | to generate unique code automatically [true|false] (Optional)
+auto | to generate unique code automatically [true|false]
+
+
+```json
+{
+    "error": "[true/false]",
+    "msg": "[Success / Failure]",
+    "short_url": "[short url if no error]"
+}
+```
+
+
+## */delete*
+
+Endpont returns all short links added by particular user
+
+> example url
+
+> **/delete?uid=[USER_ID]&code=[UNIQUE_CODE]**
+
+Query | Description
+------------ | -------------
+uid | unique user id
+code | unique short link code 
 
 
 ```json
