@@ -39,7 +39,9 @@ app.get('/delete', (req, res) => {
         .get()
         .then(querySnapshot => {
             querySnapshot.forEach((doc) => {
-                doc.ref.delete();
+                doc.ref.update({
+                    isArchive: true
+                })
             })
             res.send({ "error": false, "msg": "Delete Successful" })
         })
@@ -52,13 +54,18 @@ app.get('/delete', (req, res) => {
 app.get('/data', (req, res) => {
     var uid = req.query.uid;
     if(uid) {
-        firestoreApp.collection('urls').where("uid", "==", uid)
+        firestoreApp.collection('urls')
+        .where("uid", "==", uid)
+        .where("isArchive", "==", false)
         .orderBy("date", "desc")
         .get()
         .then(querySnapshot => {
             var all_user_links = [];
             querySnapshot.forEach((doc) => {
-                all_user_links.push(doc.data());
+                var data = doc.data();
+                var key = "isArchive";
+                delete data[key]
+                all_user_links.push(data);
             })
             res.send(all_user_links);
         })
@@ -78,13 +85,14 @@ app.get('/add', (req, res) => {
     var auto = req.query.auto;
     var title = "";
 
-    var hostname = (UrlD.parse(url)).hostname;
-    title = hostname;
-
     var base_url = "https://urlst.ga/"
 
     if(!code || auto || (code == "null")) {
         code = makeid();
+        var hostname = (UrlD.parse(url)).hostname;
+        title = hostname;
+    } else {
+        title = firstLetterCaps(code);
     }
     
     var exists = false;
@@ -107,7 +115,8 @@ app.get('/add', (req, res) => {
                 uid: uid,
                 short_url: base_url + code,
                 title: title,
-                date: new Date()
+                date: new Date(),
+                isArchive: false
             })
             .then(docRef => {
                 docRef.get()
@@ -160,3 +169,9 @@ app.get('/:code', (req,res) => {
 })
 
 exports.urlapp = functions.https.onRequest(app);
+
+
+function firstLetterCaps(string) 
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
